@@ -1,6 +1,6 @@
 namespace DataFileGenerator.Interfaces;
 
-public interface IFileWriter<T>
+public interface IFileWriter
 {
-    public void Write(string filePath, IEnumerable<T> data);
+    public void Write(IEnumerable<string> data);
 }

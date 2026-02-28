@@ -1,17 +1,17 @@
 using System.Data;
 using DataFileGenerator.Interfaces;
-using DataFileGenerator.Models;
 using Microsoft.Data.SqlClient;
+using System.Globalization;
 
 namespace DataFileGenerator.DataReaders;
 
-public class SqlServerCategoriesProductsReader : IDataSourceReader<CategoryProductRow>
+public class SqlServerReader : IDataSourceReader
 {
     private readonly SqlConnection _connection;
     private readonly string _viewName;
     private bool _leaveConnectionOpen = true;
 
-    public SqlServerCategoriesProductsReader(SqlConnection? connection, string viewName)
+    public SqlServerReader(SqlConnection? connection, string viewName)
     {
         if (string.IsNullOrWhiteSpace(viewName))
             throw new ArgumentException("View name cannot be null or whitespace", nameof(viewName));
@@ -19,7 +19,7 @@ public class SqlServerCategoriesProductsReader : IDataSourceReader<CategoryProdu
         _viewName = viewName;
     }
 
-    public IEnumerable<CategoryProductRow> Read()
+    public IEnumerable<string> Read()
     {
         if (_connection.State != ConnectionState.Open)
         {
@@ -34,16 +34,7 @@ public class SqlServerCategoriesProductsReader : IDataSourceReader<CategoryProdu
 
             while (reader.Read())
             {
-                yield return new CategoryProductRow
-                {
-                    CategoryName = reader.GetString(0),
-                    CategoryIsActive = reader.GetBoolean(1),
-                    ProductCode = reader.GetInt32(2),
-                    ProductName = reader.GetString(3),
-                    Price = reader.GetDecimal(4),
-                    Quantity = reader.GetInt16(5),
-                    ProductIsActive = reader.GetBoolean(6)
-                };
+                yield return GetLine(reader);
             }
         }
         finally
@@ -51,5 +42,19 @@ public class SqlServerCategoriesProductsReader : IDataSourceReader<CategoryProdu
             if (!_leaveConnectionOpen)
                 _connection.Close();
         }
+    }
+
+    private string GetLine(SqlDataReader reader)
+    {
+        return string.Join('\t', new[]
+        {
+            reader.GetString(0),
+            reader.GetBoolean(1) ? "1" : "0",
+            reader.GetInt32(2).ToString(CultureInfo.InvariantCulture),
+            reader.GetString(3),
+            reader.GetDecimal(4).ToString(CultureInfo.InvariantCulture),
+            reader.GetInt16(5).ToString(CultureInfo.InvariantCulture),
+            reader.GetBoolean(6) ? "1" : "0"
+        });
     }
 }

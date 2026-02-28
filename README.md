@@ -40,7 +40,9 @@ Each column is separated by a tab character (\t).
 
 example:
 Beverages  1  1  Chai  18.00  39  1
+
 Seafood  1  12  Ikura  31.00  20  1
+
 ---
 
 Technologies Used

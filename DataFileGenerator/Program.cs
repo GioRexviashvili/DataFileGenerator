@@ -10,7 +10,7 @@ internal static class Program
     private static void Main()
     {
         const string connectionString =
-            "Server=localhost,1433;Database=Northwind;User Id=sa;Password=Giorgigamer707;TrustServerCertificate=True;";
+            "Server=localhost,1433;Database=Northwind;User Id=sa;Password=***;TrustServerCertificate=True;";
 
         const string viewName = "v_categories_products";
 

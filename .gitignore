@@ -56,3 +56,5 @@ packages/
 ############################
 .env
 .env.*
+
+appsettings.Development.json

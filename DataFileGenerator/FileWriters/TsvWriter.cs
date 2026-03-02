@@ -5,8 +5,13 @@ namespace DataFileGenerator.FileWriters;
 public class TsvWriter : IFileWriter
 {
     private readonly Stream _stream;
-    private bool _leaveStreamOpen = true;
+    private readonly bool _leaveStreamOpen = false;
 
+    public TsvWriter(Stream stream)
+    {
+        _stream = stream ?? throw new ArgumentNullException(nameof(stream), "Stream cannot be null");
+        _leaveStreamOpen = true;
+    }
     public TsvWriter(FileInfo fileInfo)
     {
         ArgumentNullException.ThrowIfNull(fileInfo);
@@ -35,5 +40,11 @@ public class TsvWriter : IFileWriter
         {
             writer.WriteLine(item);
         }
+    }
+
+    public void Dispose()
+    {
+        if (!_leaveStreamOpen)
+            _stream.Dispose();
     }
 }

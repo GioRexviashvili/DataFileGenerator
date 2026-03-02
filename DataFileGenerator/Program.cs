@@ -28,7 +28,7 @@ internal static class Program
         using var connection = new SqlConnection(connectionString);
         
         IDbReader reader = new DbReader(connection, viewName, getLine, ",");
-        IFileWriter writer = new TsvWriter(outputPath);
+        using IFileWriter writer = new TsvWriter(outputPath);
         var exporter = new Exporter(reader, writer);
 
         try

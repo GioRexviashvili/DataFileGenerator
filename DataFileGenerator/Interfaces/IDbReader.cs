@@ -1,6 +1,6 @@
 namespace DataFileGenerator.Interfaces;
 
-public interface IDataSourceReader
+public interface IDbReader
 {
     public IEnumerable<string> Read();
 }

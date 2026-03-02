@@ -1,17 +1,17 @@
 using System.Data;
+using System.Data.Common;
 using DataFileGenerator.Interfaces;
-using Microsoft.Data.SqlClient;
 using System.Globalization;
 
 namespace DataFileGenerator.DataReaders;
 
-public class SqlServerReader : IDataSourceReader
+public class DbReader : IDbReader
 {
-    private readonly SqlConnection _connection;
+    private readonly DbConnection _connection;
     private readonly string _viewName;
     private bool _leaveConnectionOpen = true;
 
-    public SqlServerReader(SqlConnection? connection, string viewName)
+    public DbReader(DbConnection? connection, string viewName)
     {
         if (string.IsNullOrWhiteSpace(viewName))
             throw new ArgumentException("View name cannot be null or whitespace", nameof(viewName));
@@ -29,8 +29,9 @@ public class SqlServerReader : IDataSourceReader
 
         try
         {
-            using SqlCommand command = new SqlCommand($"select * from {_viewName}", _connection);
-            using SqlDataReader reader = command.ExecuteReader();
+            using DbCommand command = _connection.CreateCommand();
+            command.CommandText = $"select * from {_viewName};";
+            using DbDataReader reader = command.ExecuteReader();
 
             while (reader.Read())
             {
@@ -44,17 +45,17 @@ public class SqlServerReader : IDataSourceReader
         }
     }
 
-    private string GetLine(SqlDataReader reader)
+    private string GetLine(DbDataReader reader)
     {
         return string.Join('\t', new[]
         {
-            reader.GetString(0),
-            reader.GetBoolean(1) ? "1" : "0",
-            reader.GetInt32(2).ToString(CultureInfo.InvariantCulture),
-            reader.GetString(3),
-            reader.GetDecimal(4).ToString(CultureInfo.InvariantCulture),
-            reader.GetInt16(5).ToString(CultureInfo.InvariantCulture),
-            reader.GetBoolean(6) ? "1" : "0"
+            reader["CategoryName"].ToString(),
+            (bool)reader["CategoryIsActive"] ? "1" : "0",
+            reader["ProductCode"].ToString(),
+            reader["ProductName"].ToString(),
+            reader["Price"].ToString(),
+            reader["Quantity"].ToString(),
+            (bool)reader["ProductIsActive"] ? "1" : "0"
         });
     }
 }

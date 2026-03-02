@@ -10,7 +10,7 @@ internal static class Program
     private static void Main()
     {
         const string connectionString =
-            "Server=localhost,1433;Database=Northwind;User Id=sa;Password=***;TrustServerCertificate=True;";
+            "Server=localhost,1433;Database=Northwind;User Id=sa;Password=Giorgigamer707;TrustServerCertificate=True;";
 
         const string viewName = "v_categories_products";
 
@@ -18,7 +18,7 @@ internal static class Program
 
         using var connection = new SqlConnection(connectionString);
 
-        var reader = new SqlServerReader(connection, viewName);
+        var reader = new DbReader(connection, viewName);
         var writer = new TsvWriter(outputPath);
         var exporter = new Exporter(reader, writer);
 

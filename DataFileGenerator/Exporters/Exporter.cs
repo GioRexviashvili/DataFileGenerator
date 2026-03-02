@@ -4,10 +4,10 @@ namespace DataFileGenerator.Exporters;
 
 public sealed class Exporter
 {
-    private readonly IDataSourceReader _reader;
+    private readonly IDbReader _reader;
     private readonly IFileWriter _writer;
 
-    public Exporter(IDataSourceReader reader, IFileWriter writer)
+    public Exporter(IDbReader reader, IFileWriter writer)
     {
         _reader = reader ?? throw new ArgumentNullException(nameof(reader));
         _writer = writer ?? throw new ArgumentNullException(nameof(writer));

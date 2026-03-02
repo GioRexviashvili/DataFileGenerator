@@ -1,7 +1,6 @@
 using System.Data;
 using System.Data.Common;
 using DataFileGenerator.Interfaces;
-using System.Globalization;
 
 namespace DataFileGenerator.DataReaders;
 
@@ -9,14 +8,18 @@ public class DbReader : IDbReader
 {
     private readonly DbConnection _connection;
     private readonly string _viewName;
+    private readonly Func<DbDataReader, string, string> _getLine;
+    private readonly string _separator;
     private bool _leaveConnectionOpen = true;
 
-    public DbReader(DbConnection? connection, string viewName)
+    public DbReader(DbConnection? connection, string viewName, Func<DbDataReader, string, string> getLine, string separator)
     {
         if (string.IsNullOrWhiteSpace(viewName))
             throw new ArgumentException("View name cannot be null or whitespace", nameof(viewName));
         _connection = connection ?? throw new ArgumentNullException(nameof(connection), "Connection cannot be null");
         _viewName = viewName;
+        _getLine = getLine;
+        _separator = separator;
     }
 
     public IEnumerable<string> Read()
@@ -35,7 +38,7 @@ public class DbReader : IDbReader
 
             while (reader.Read())
             {
-                yield return GetLine(reader);
+                yield return _getLine(reader, _separator);
             }
         }
         finally
@@ -45,17 +48,5 @@ public class DbReader : IDbReader
         }
     }
 
-    private string GetLine(DbDataReader reader)
-    {
-        return string.Join('\t', new[]
-        {
-            reader["CategoryName"].ToString(),
-            (bool)reader["CategoryIsActive"] ? "1" : "0",
-            reader["ProductCode"].ToString(),
-            reader["ProductName"].ToString(),
-            reader["Price"].ToString(),
-            reader["Quantity"].ToString(),
-            (bool)reader["ProductIsActive"] ? "1" : "0"
-        });
-    }
+
 }

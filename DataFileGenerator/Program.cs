@@ -1,6 +1,9 @@
-﻿using DataFileGenerator.DataReaders;
+﻿using System.Data.Common;
+using DataFileGenerator.DataReaders;
 using DataFileGenerator.Exporters;
 using DataFileGenerator.FileWriters;
+using DataFileGenerator.Helpers;
+using DataFileGenerator.Interfaces;
 using Microsoft.Data.SqlClient;
 
 namespace DataFileGenerator;
@@ -12,14 +15,18 @@ internal static class Program
         const string connectionString =
             "Server=localhost,1433;Database=Northwind;User Id=sa;Password=Giorgigamer707;TrustServerCertificate=True;";
 
-        const string viewName = "v_categories_products";
+        //const string viewName = "v_categories_products";
+        const string viewName = "v_categories";
 
-        string outputPath = "OutputFile/Products.tsv";
+        //Func<DbDataReader, string, string> getLine = Formater.GetCategoryProductRow;
+        Func<DbDataReader, string, string> getLine = Formater.GetCategoryRow;
+        
+        string outputPath = "OutputFile/Categories.tsv";
 
         using var connection = new SqlConnection(connectionString);
-
-        var reader = new DbReader(connection, viewName);
-        var writer = new TsvWriter(outputPath);
+        
+        IDbReader reader = new DbReader(connection, viewName, getLine, "\t");
+        IFileWriter writer = new TsvWriter(outputPath);
         var exporter = new Exporter(reader, writer);
 
         try

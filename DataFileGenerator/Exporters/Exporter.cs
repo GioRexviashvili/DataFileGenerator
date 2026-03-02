@@ -9,8 +9,8 @@ public sealed class Exporter
 
     public Exporter(IDbReader reader, IFileWriter writer)
     {
-        _reader = reader ?? throw new ArgumentNullException(nameof(reader));
-        _writer = writer ?? throw new ArgumentNullException(nameof(writer));
+        _reader = reader ?? throw new ArgumentNullException(nameof(reader), "Reader cannot be null");
+        _writer = writer ?? throw new ArgumentNullException(nameof(writer), "Writer cannot be null");
     }
 
     public void Export()

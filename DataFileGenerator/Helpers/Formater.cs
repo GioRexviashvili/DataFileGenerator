@@ -28,4 +28,16 @@ public static class Formater
             (bool)reader["IsActive"] ? "1" : "0",
         });
     }
+    
+    public static string GetShipperOrderRow(DbDataReader reader, string separator)
+    {
+        return string.Join(separator, new[]
+        {
+            reader["CompanyName"].ToString(),
+            reader["OrderID"].ToString(),
+            reader["OrderDate"].ToString(),
+            reader["ProductID"].ToString(),
+            reader["Quantity"].ToString(),
+        });
+    }
 }

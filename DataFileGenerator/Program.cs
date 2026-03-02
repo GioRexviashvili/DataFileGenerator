@@ -13,19 +13,21 @@ internal static class Program
     private static void Main()
     {
         const string connectionString =
-            "Server=localhost,1433;Database=Northwind;User Id=sa;Password=Giorgigamer707;TrustServerCertificate=True;";
+            "Server=localhost,1433;Database=Northwind;User Id=sa;Password=***;TrustServerCertificate=True;";
 
+        const string viewName = "v_shippers_orders";
         //const string viewName = "v_categories_products";
-        const string viewName = "v_categories";
+        //const string viewName = "v_categories";
 
+        Func<DbDataReader, string, string> getLine = Formater.GetShipperOrderRow;
         //Func<DbDataReader, string, string> getLine = Formater.GetCategoryProductRow;
-        Func<DbDataReader, string, string> getLine = Formater.GetCategoryRow;
+        //Func<DbDataReader, string, string> getLine = Formater.GetCategoryRow;
         
-        string outputPath = "OutputFile/Categories.tsv";
+        string outputPath = "OutputFile/ShippersOrders.csv";
 
         using var connection = new SqlConnection(connectionString);
         
-        IDbReader reader = new DbReader(connection, viewName, getLine, "\t");
+        IDbReader reader = new DbReader(connection, viewName, getLine, ",");
         IFileWriter writer = new TsvWriter(outputPath);
         var exporter = new Exporter(reader, writer);
 
